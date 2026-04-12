@@ -135,4 +135,6 @@ app.post('/api/cancel', (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`RailMitra: http://localhost:${PORT}`));
+app.listen(PORT, () => {
+    console.log("RailMitra running on port " + PORT);
+});
