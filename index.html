@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RailMitra - Premium</title>
+    <style>
+        :root { --primary: #1e3799; --secondary: #4a69bd; --accent: #fa983a; --danger: #e55039; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; }
+        nav { background: var(--primary); color: white; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .hero { background: #0a3d62; color: white; padding: 60px 20px; text-align: center; }
+        .main-card { background: white; max-width: 900px; margin: -40px auto 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 30px; }
+        .tabs { border-bottom: 2px solid #eee; margin-bottom: 25px; display: flex; gap: 10px;}
+        .tab-btn { padding: 12px 25px; border: none; background: none; cursor: pointer; font-size: 16px; font-weight: 600; color: #7f8c8d; }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        .section { display: none; }
+        .active-section { display: block; }
+        .input-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn { background: var(--accent); color: white; padding: 12px; border: none; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px;}
+        .btn:hover { opacity: 0.9; }
+        .btn-danger { background: var(--danger); }
+        .list-item { border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f8f9fa;}
+        .panel-box { background:#f1f2f6; padding:20px; border-radius:8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2 style="margin:0;">🚆 RailMitra</h2>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span id="user-display">Logged in as: <b>Guest</b></span>
+        <button id="logout-btn" class="btn btn-danger" style="display:none; padding: 8px 15px; margin: 0; width: auto;" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="hero">
+    <h1>India's Fastest Rail Network</h1>
+    <p>Safe • Reliable • Fast</p>
+</div>
+
+<div class="main-card">
+    <div class="tabs">
+        <button id="tab-guest" class="tab-btn active" onclick="openTab('guest')">Search Trains</button>
+        <button id="tab-customer" class="tab-btn" onclick="openTab('customer')">Customer Portal</button>
+        <button id="tab-admin" class="tab-btn" onclick="openTab('admin')">Admin Portal</button>
+    </div>
+
+    <div id="guest" class="section active-section">
+        <div class="input-group">
+            <input type="text" id="sSrc" placeholder="From (Source)">
+            <input type="text" id="sDest" placeholder="To (Destination)">
+        </div>
+        <input type="text" id="sDate" placeholder="Date (DD/MM/YYYY)">
+        <button class="btn" onclick="searchTrains()">Search Trains</button>
+        <div id="search-results"></div>
+    </div>
+
+    <div id="customer" class="section">
+        <div id="auth-form">
+            <h3>Login or Create Account</h3>
+            <input type="text" id="uName" placeholder="Username">
+            <input type="password" id="uPass" placeholder="Password">
+            <input type="text" id="uPhone" placeholder="Phone Number (Fill only for Sign Up)">
+            <div class="input-group">
+                <button class="btn" style="background:#1e3799" onclick="handleSignIn()">Sign In</button>
+                <button class="btn" style="background:#44bd32" onclick="handleSignUp()">Sign Up</button>
+            </div>
+        </div>
+
+        <div id="dashboard" style="display:none;">
+            <h3>Your Dashboard</h3>
+            <div class="input-group">
+                <button class="btn" style="background:#44bd32" onclick="showSection('book-form')">Book New Ticket</button>
+                <button class="btn" style="background:#1e3799" onclick="loadMyBookings()">View My Bookings</button>
+            </div>
+            
+            <div id="book-form" class="panel-box" style="display:none;">
+                <h4>Book a Ticket</h4>
+                <input type="number" id="bTrainNo" placeholder="Enter Train Number">
+                <input type="number" id="bCount" placeholder="Number of Passengers" onchange="createPassFields()">
+                <div id="pass-fields"></div>
+                <button class="btn" onclick="confirmBooking()">Confirm & Generate PNR</button>
+            </div>
+
+            <div id="my-bookings-list" style="margin-top:20px;"></div>
+        </div>
+    </div>
+
+    <div id="admin" class="section">
+        <div id="admin-login-area">
+            <input type="password" id="adminKey" placeholder="Admin Password (123)">
+            <button class="btn" onclick="checkAdmin()">Enter Admin Panel</button>
+        </div>
+        
+        <div id="admin-panel" style="display:none; margin-top:20px;">
+            <div class="panel-box">
+                <h4>1. Add New Train</h4>
+                <div class="input-group">
+                    <input type="number" id="tNo" placeholder="Train No">
+                    <input type="text" id="tName" placeholder="Train Name">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="tSrc" placeholder="Source">
+                    <input type="text" id="tDest" placeholder="Destination">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="tDate" placeholder="Date (DD/MM/YYYY)">
+                    <input type="number" id="tSeats" placeholder="Total Seats">
+                </div>
+                <button class="btn" style="background:#44bd32" onclick="addTrain()">Add Train</button>
+            </div>
+
+            <div class="panel-box">
+                <h4>2. Train Modifications</h4>
+                <div class="input-group">
+                    <input type="number" id="modTNo" placeholder="Enter Train No">
+                    <button class="btn btn-danger" onclick="deleteTrain()">Delete Train</button>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="addSeatsCount" placeholder="No. of Seats to Add">
+                    <button class="btn" style="background:#f39c12" onclick="increaseSeats()">Increase Seats</button>
+                </div>
+            </div>
+
+            <div class="panel-box">
+                <h4>3. System Monitoring</h4>
+                <button class="btn" style="background:#1e3799" onclick="viewAllBookings()">View All Bookings</button>
+                <div id="all-bookings-display" style="margin-top:15px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
