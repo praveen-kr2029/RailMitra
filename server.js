@@ -1,10 +1,21 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
-app.use(express.static(__dirname));
+
+// --- SECURE ROUTING ---
+// Instead of serving the whole folder, we only serve what the browser needs
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/script.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'script.js'));
+});
 
 let trains = [];
 let customers = [];
@@ -110,13 +121,11 @@ app.post('/api/book', (req, res) => {
     }
 });
 
-// View My Bookings
 app.get('/api/my-bookings/:user', (req, res) => {
     const myBookings = bookings.filter(b => b.customerUser === req.params.user);
     res.json(myBookings);
 });
 
-// Cancel Ticket
 app.post('/api/cancel', (req, res) => {
     const pnr = req.body.pnr;
     const bIndex = bookings.findIndex(b => b.pnr == pnr);
@@ -125,10 +134,10 @@ app.post('/api/cancel', (req, res) => {
         let bookingToCancel = bookings[bIndex];
         let t = trains.find(train => train.trainNo == bookingToCancel.trainNo);
         if(t) {
-            t.availableSeats += bookingToCancel.pDetails.length; // Return seats to train
+            t.availableSeats += bookingToCancel.pDetails.length;
         }
-        bookings.splice(bIndex, 1); // Remove from array
-        updateFiles(); // Sync text files
+        bookings.splice(bIndex, 1);
+        updateFiles();
         res.json({ success: true });
     } else {
         res.json({ success: false, message: "PNR not found!" });
