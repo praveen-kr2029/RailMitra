@@ -1,5 +1,6 @@
 let loggedInUser = null;
 
+
 function openTab(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
