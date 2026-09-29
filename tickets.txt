@@ -1,2 +1,2 @@
-PNR	USER	TRAIN	PASSENGERS(NAME, AGE)
+PNR	USER	TRAIN	PASSENGERS(NAME,  AGE)
 ------------------------------------------------------------
